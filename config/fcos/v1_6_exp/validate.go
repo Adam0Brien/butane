@@ -15,12 +15,25 @@
 package v1_6_exp
 
 import (
+	"regexp"
+
 	"github.com/coreos/butane/config/common"
 	"github.com/coreos/ignition/v2/config/util"
 
 	"github.com/coreos/vcontext/path"
 	"github.com/coreos/vcontext/report"
 )
+
+var regex = regexp.MustCompile(`^/(etc|var)/.*`)
+
+func (conf Config) Validate(c path.ContextPath) (r report.Report) {
+	for _, fs := range conf.Storage.Filesystems {
+		if util.NilOrEmpty(fs.Path) || (!regex.MatchString(*fs.Path)) {
+			r.AddOnError(c.Append("storage"), common.ErrMountPointForbidden)
+		}
+	}
+	return
+}
 
 func (d BootDevice) Validate(c path.ContextPath) (r report.Report) {
 	if d.Layout != nil {

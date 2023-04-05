@@ -234,3 +234,117 @@ func TestValidateGrubUser(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateMountPoints(t *testing.T) {
+	tests := []struct {
+		in      Config
+		out     error
+		errPath path.ContextPath
+	}{
+		// valid config (has prefix "/etc")
+		{
+			in: Config{
+				Config: base.Config{
+					Storage: base.Storage{
+						Filesystems: []base.Filesystem{
+							{
+								Path: util.StrToPtr("/etc/foo"),
+							},
+						},
+					},
+				},
+			},
+		},
+		// valid config (has prefix "/var")
+		{
+			in: Config{
+				Config: base.Config{
+					Storage: base.Storage{
+						Filesystems: []base.Filesystem{
+							{
+								Path: util.StrToPtr("/var/foo/bar"),
+							},
+						},
+					},
+				},
+			},
+		},
+		// invalid config (path name is '/')
+		{
+			in: Config{
+				Config: base.Config{
+					Storage: base.Storage{
+						Filesystems: []base.Filesystem{
+							{
+								Path: util.StrToPtr("/"),
+							},
+						},
+					},
+				},
+			},
+
+			out:     common.ErrMountPointForbidden,
+			errPath: path.New("yaml", "storage"),
+		},
+		// invalid config (path is /boot)
+		{
+			in: Config{
+				Config: base.Config{
+					Storage: base.Storage{
+						Filesystems: []base.Filesystem{
+							{
+								Path: util.StrToPtr("/boot"),
+							},
+						},
+					},
+				},
+			},
+
+			out:     common.ErrMountPointForbidden,
+			errPath: path.New("yaml", "storage"),
+		},
+		// invalid config (path is nil)
+		{
+			in: Config{
+				Config: base.Config{
+					Storage: base.Storage{
+						Filesystems: []base.Filesystem{
+							{
+								Path: nil,
+							},
+						},
+					},
+				},
+			},
+
+			out:     common.ErrMountPointForbidden,
+			errPath: path.New("yaml", "storage"),
+		},
+		// invalid config (path is invalid, does not contain /etc or /var)
+		{
+			in: Config{
+				Config: base.Config{
+					Storage: base.Storage{
+						Filesystems: []base.Filesystem{
+							{
+								Path: util.StrToPtr("/thisIsABugTest"),
+							},
+						},
+					},
+				},
+			},
+
+			out:     common.ErrMountPointForbidden,
+			errPath: path.New("yaml", "storage"),
+		},
+	}
+	for i, test := range tests {
+		t.Run(fmt.Sprintf("validate %d", i), func(t *testing.T) {
+			actual := test.in.Validate(path.New("yaml"))
+			baseutil.VerifyReport(t, test.in, actual)
+			expected := report.Report{}
+			expected.AddOnError(test.errPath, test.out)
+			assert.Equal(t, expected, actual, "invalid report")
+		})
+	}
+}

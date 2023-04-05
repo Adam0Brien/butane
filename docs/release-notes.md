@@ -63,6 +63,7 @@ key](https://getfedora.org/security/).
   3.5.0-experimental
 - Add RHEL for Edge spec 1.2.0-experimental, targeting Ignition spec
   3.5.0-experimental
+- Fail on invalid mointpoint configuration
 
 ### Bug fixes
 
