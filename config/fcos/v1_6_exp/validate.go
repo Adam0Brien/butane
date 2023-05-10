@@ -24,12 +24,14 @@ import (
 	"github.com/coreos/vcontext/report"
 )
 
-var regex = regexp.MustCompile(`^/(etc|var)/.*`)
+var regex = regexp.MustCompile(`/(etc|var)`)
 
 func (conf Config) Validate(c path.ContextPath) (r report.Report) {
-	for _, fs := range conf.Storage.Filesystems {
-		if util.NilOrEmpty(fs.Path) || (!regex.MatchString(*fs.Path)) {
-			r.AddOnError(c.Append("storage"), common.ErrMountPointForbidden)
+	for i, fs := range conf.Storage.Filesystems {
+		if fs.Path != nil && !regex.MatchString(*fs.Path) {
+			r.AddOnError(c.Append("storage", "filesystems", i, "path"), common.ErrMountPointForbidden)
+		} else if fs.Path == nil{
+			r.AddOnError(c.Append("storage", "filesystems", i, "path"), common.ErrMountPointForbidden)
 		}
 	}
 	return

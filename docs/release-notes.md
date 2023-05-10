@@ -15,6 +15,7 @@ key](https://getfedora.org/security/).
 ### Features
 
 - Add `-c`/`--check` option to check config without producing output
+- Forbid mountpoints that don't have the prefix /var or /etc _(fcos 1.6-exp)_
 
 ### Bug fixes
 
@@ -63,7 +64,6 @@ key](https://getfedora.org/security/).
   3.5.0-experimental
 - Add RHEL for Edge spec 1.2.0-experimental, targeting Ignition spec
   3.5.0-experimental
-- Fail on invalid mointpoint configuration
 
 ### Bug fixes
 

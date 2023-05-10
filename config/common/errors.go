@@ -48,10 +48,12 @@ var (
 	// systemd
 	ErrTooManySystemdSources = errors.New("only one of the following can be set: contents, contents_local")
 
+	// mount points
+	ErrMountPointForbidden = errors.New("mounts must be under /etc or /var")
+
 	// mount units
-	ErrMountUnitNoPath     = errors.New("path is required if with_mount_unit is true and format is not swap")
-	ErrMountUnitNoFormat   = errors.New("format is required if with_mount_unit is true")
-	ErrMountPointForbidden = errors.New("forbidden mount point, Use a mount point that starts with /etc or /var")
+	ErrMountUnitNoPath   = errors.New("path is required if with_mount_unit is true and format is not swap")
+	ErrMountUnitNoFormat = errors.New("format is required if with_mount_unit is true")
 
 	// boot device
 	ErrUnknownBootDeviceLayout = errors.New("layout must be one of: aarch64, ppc64le, x86_64")

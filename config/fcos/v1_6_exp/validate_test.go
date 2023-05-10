@@ -284,7 +284,7 @@ func TestValidateMountPoints(t *testing.T) {
 			},
 
 			out:     common.ErrMountPointForbidden,
-			errPath: path.New("yaml", "storage"),
+			errPath: path.New("yaml", "storage", "filesystems", 0, "path"),
 		},
 		// invalid config (path is /boot)
 		{
@@ -301,7 +301,7 @@ func TestValidateMountPoints(t *testing.T) {
 			},
 
 			out:     common.ErrMountPointForbidden,
-			errPath: path.New("yaml", "storage"),
+			errPath: path.New("yaml", "storage", "filesystems", 0, "path"),
 		},
 		// invalid config (path is nil)
 		{
@@ -318,7 +318,7 @@ func TestValidateMountPoints(t *testing.T) {
 			},
 
 			out:     common.ErrMountPointForbidden,
-			errPath: path.New("yaml", "storage"),
+			errPath: path.New("yaml", "storage", "filesystems", 0, "path"),
 		},
 		// invalid config (path is invalid, does not contain /etc or /var)
 		{
@@ -335,7 +335,7 @@ func TestValidateMountPoints(t *testing.T) {
 			},
 
 			out:     common.ErrMountPointForbidden,
-			errPath: path.New("yaml", "storage"),
+			errPath: path.New("yaml", "storage", "filesystems", 0, "path"),
 		},
 	}
 	for i, test := range tests {
