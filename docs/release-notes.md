@@ -15,7 +15,7 @@ key](https://getfedora.org/security/).
 ### Features
 
 - Add `-c`/`--check` option to check config without producing output
-- Forbid mountpoints that don't have the prefix /var or /etc _(fcos 1.6-exp)_
+- Forbid mountpoints that don't have the prefix /var or /etc if with_mount_unit is true _(fcos 1.6-exp)_
 
 ### Bug fixes
 

@@ -241,7 +241,7 @@ func TestValidateMountPoints(t *testing.T) {
 		out     error
 		errPath path.ContextPath
 	}{
-		// valid config (has prefix "/etc")
+		// valid config (has prefix "/etc" or "/var")
 		{
 			in: Config{
 				Config: base.Config{
@@ -250,19 +250,8 @@ func TestValidateMountPoints(t *testing.T) {
 							{
 								Path: util.StrToPtr("/etc/foo"),
 							},
-						},
-					},
-				},
-			},
-		},
-		// valid config (has prefix "/var")
-		{
-			in: Config{
-				Config: base.Config{
-					Storage: base.Storage{
-						Filesystems: []base.Filesystem{
 							{
-								Path: util.StrToPtr("/var/foo/bar"),
+								Path: util.StrToPtr("/var"),
 							},
 						},
 					},
@@ -282,9 +271,6 @@ func TestValidateMountPoints(t *testing.T) {
 					},
 				},
 			},
-
-			out:     common.ErrMountPointForbidden,
-			errPath: path.New("yaml", "storage", "filesystems", 0, "path"),
 		},
 		// invalid config (path is /boot)
 		{
@@ -293,7 +279,8 @@ func TestValidateMountPoints(t *testing.T) {
 					Storage: base.Storage{
 						Filesystems: []base.Filesystem{
 							{
-								Path: util.StrToPtr("/boot"),
+								Path:          util.StrToPtr("/boot"),
+								WithMountUnit: util.BoolToPtr(true),
 							},
 						},
 					},
@@ -303,7 +290,7 @@ func TestValidateMountPoints(t *testing.T) {
 			out:     common.ErrMountPointForbidden,
 			errPath: path.New("yaml", "storage", "filesystems", 0, "path"),
 		},
-		// invalid config (path is nil)
+		// valid config (path is nil)
 		{
 			in: Config{
 				Config: base.Config{
@@ -316,9 +303,6 @@ func TestValidateMountPoints(t *testing.T) {
 					},
 				},
 			},
-
-			out:     common.ErrMountPointForbidden,
-			errPath: path.New("yaml", "storage", "filesystems", 0, "path"),
 		},
 		// invalid config (path is invalid, does not contain /etc or /var)
 		{
@@ -327,7 +311,44 @@ func TestValidateMountPoints(t *testing.T) {
 					Storage: base.Storage{
 						Filesystems: []base.Filesystem{
 							{
-								Path: util.StrToPtr("/thisIsABugTest"),
+								Path:          util.StrToPtr("/thisIsABugTest"),
+								WithMountUnit: util.BoolToPtr(true),
+							},
+						},
+					},
+				},
+			},
+
+			out:     common.ErrMountPointForbidden,
+			errPath: path.New("yaml", "storage", "filesystems", 0, "path"),
+		},
+		// invalid config (path is /varnish)
+		{
+			in: Config{
+				Config: base.Config{
+					Storage: base.Storage{
+						Filesystems: []base.Filesystem{
+							{
+								Path:          util.StrToPtr("/varnish"),
+								WithMountUnit: util.BoolToPtr(true),
+							},
+						},
+					},
+				},
+			},
+
+			out:     common.ErrMountPointForbidden,
+			errPath: path.New("yaml", "storage", "filesystems", 0, "path"),
+		},
+		// invalid config (path is /foo/var)
+		{
+			in: Config{
+				Config: base.Config{
+					Storage: base.Storage{
+						Filesystems: []base.Filesystem{
+							{
+								Path:          util.StrToPtr("/foo/var"),
+								WithMountUnit: util.BoolToPtr(true),
 							},
 						},
 					},
